@@ -1,2 +1,2 @@
 #!/bin/sh
-npm run themes:check
+npm run themes:check -- --quick

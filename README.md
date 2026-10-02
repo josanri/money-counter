@@ -11,7 +11,7 @@ Six visual presets: Minimal, Euro, Market, Coffee Shop, Fruit Shop, and Butcher.
 ```bash
 npm install
 npm run hooks:install
-npx playwright install chromium firefox webkit
+npx playwright install chromium
 npm run dev
 ```
 
@@ -30,7 +30,9 @@ npm run preview
 npm run themes:check
 ```
 
-The pre-commit hook runs this check before each commit. It builds a production preview and checks every preset across Chromium, Firefox, and WebKit, system/light/dark appearance, compact/large controls, and mobile/desktop widths. It saves full-page screenshots in timestamped runs and updates `test-output/theme-matrix/index.html` as a contact sheet. The output folder is git-ignored. Set `THEME_CHECK_URL` to check an already-running app instead.
+The pre-commit hook runs a quick check before each commit: it builds a production preview and checks all presets in light and dark appearance, compact and large controls, and mobile and desktop widths in Chromium (48 combinations). It skips screenshot generation.
+
+For the full visual matrix across Chromium, Firefox, and WebKit, install all three Playwright browsers and run `npm run themes:check`. This checks 288 combinations and saves full-page screenshots in timestamped runs, then updates `test-output/theme-matrix/index.html` as a contact sheet. The output folder is git-ignored. Set `THEME_CHECK_URL` to check an already-running app instead.
 
 Deploy the `dist/` folder to any static host over **HTTPS** (required for install).
 

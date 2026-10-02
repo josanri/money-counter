@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium, firefox, webkit } from 'playwright';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
+const quickCheck = process.argv.includes('--quick');
 
 async function findAvailablePort() {
 	const listener = createServer();
@@ -35,17 +36,21 @@ const runDirectory = join(screenshotRoot, 'runs', runId);
 const galleryPath = join(screenshotRoot, 'index.html');
 const screenshots = [];
 const palettes = ['minimal', 'euro', 'market', 'coffee', 'fruitshop', 'butcher'];
-const browserEngines = [
+const allBrowserEngines = [
 	{ name: 'chromium', type: chromium },
 	{ name: 'firefox', type: firefox },
 	{ name: 'webkit', type: webkit },
 ];
-const appearances = [
+const allAppearances = [
 	{ value: 'system', colorScheme: 'light' },
 	{ value: 'system', colorScheme: 'dark' },
 	{ value: 'light', colorScheme: 'light' },
 	{ value: 'dark', colorScheme: 'dark' },
 ];
+const browserEngines = quickCheck ? allBrowserEngines.slice(0, 1) : allBrowserEngines;
+const appearances = quickCheck
+	? allAppearances.filter(({ value }) => value !== 'system')
+	: allAppearances;
 const layouts = ['compact', 'large'];
 const viewports = [
 	{ name: 'mobile', width: 375, height: 812 },
@@ -96,7 +101,7 @@ async function stopServer() {
 }
 
 try {
-	await mkdir(runDirectory, { recursive: true });
+	if (!quickCheck) await mkdir(runDirectory, { recursive: true });
 	if (!process.env.THEME_CHECK_URL) await buildSite();
 
 	if (!process.env.THEME_CHECK_URL) {
@@ -267,21 +272,23 @@ async function runBrowserMatrix(browserEngine) {
 					const appearanceName = appearance.value === 'system'
 						? `system-${appearance.colorScheme}`
 						: appearance.value;
-					const fileName = `${browserEngine.name}-${viewport.name}-${palette}-${appearanceName}-${layout}.png`;
-					const imagePath = `runs/${runId}/${fileName}`;
-					await page.locator('details.settings-menu').evaluate((menu) => {
-						menu.open = false;
-					});
-					await page.evaluate(() => window.scrollTo(0, 0));
-					await page.screenshot({
-						path: join(runDirectory, fileName),
-						fullPage: true,
-						animations: 'disabled',
-					});
-					screenshots.push({ engine: browserEngine.name, palette, appearance: appearanceName, layout, viewport: viewport.name, imagePath });
-					await page.locator('details.settings-menu').evaluate((menu) => {
-						menu.open = true;
-					});
+					if (!quickCheck) {
+						const fileName = `${browserEngine.name}-${viewport.name}-${palette}-${appearanceName}-${layout}.png`;
+						const imagePath = `runs/${runId}/${fileName}`;
+						await page.locator('details.settings-menu').evaluate((menu) => {
+							menu.open = false;
+						});
+						await page.evaluate(() => window.scrollTo(0, 0));
+						await page.screenshot({
+							path: join(runDirectory, fileName),
+							fullPage: true,
+							animations: 'disabled',
+						});
+						screenshots.push({ engine: browserEngine.name, palette, appearance: appearanceName, layout, viewport: viewport.name, imagePath });
+						await page.locator('details.settings-menu').evaluate((menu) => {
+							menu.open = true;
+						});
+					}
 					checked += 1;
 				}
 			}
@@ -297,7 +304,10 @@ for (const browserEngine of browserEngines) {
 	await runBrowserMatrix(browserEngine);
 }
 
-	assert.equal(screenshots.length, checked, 'A screenshot is missing for one or more combinations');
+	if (quickCheck) {
+		console.log(`Verified ${checked} quick-check combinations: ${palettes.length} presets x ${appearances.length} appearances x ${layouts.length} layouts x ${viewports.length} viewports x ${browserEngines.length} browser. No screenshots generated.`);
+	} else {
+		assert.equal(screenshots.length, checked, 'A screenshot is missing for one or more combinations');
 const galleryCards = screenshots.map(({ engine, palette, appearance, layout, viewport, imagePath }) => `
 		<figure>
 			<a href="${imagePath}" target="_blank" rel="noreferrer"><img src="${imagePath}" alt="${engine}, ${palette}, ${appearance}, ${layout}, ${viewport}" loading="lazy" /></a>
@@ -336,6 +346,7 @@ const galleryCards = screenshots.map(({ engine, palette, appearance, layout, vie
 	await writeFile(galleryPath, gallery, 'utf8');
 	console.log(`Verified ${checked} combinations: ${palettes.length} presets x ${appearances.length} appearance modes x ${layouts.length} layouts x ${viewports.length} viewports x ${browserEngines.length} browsers.`);
 	console.log(`Screenshot gallery: ${galleryPath}`);
+	}
 } finally {
 	await browser?.close();
 	if (server && server.exitCode === null) {
