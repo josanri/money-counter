@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MoneyCounter from '../components/MoneyCounter.astro';
+import { MESSAGES } from '../i18n/messages';
+
+const locale = 'en';
+const m = MESSAGES[locale];
+---
+
+<BaseLayout title={m.pageTitle} description={m.pageDescription} lang={locale}>
+	<main class="page">
+		<h1 class="visually-hidden">{m.pageTitle}</h1>
+		<MoneyCounter />
+	</main>
+</BaseLayout>
+
+<style>
+	.page {
+		min-height: 100dvh;
+	}
+</style>

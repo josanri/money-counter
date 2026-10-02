@@ -1,0 +1,60 @@
+---
+import '../styles/money-counter.css';
+import SettingsMenu from './SettingsMenu.astro';
+import DenominationSection from './DenominationSection.astro';
+import InstallBar from './InstallBar.astro';
+import { DENOMINATIONS_BY_CURRENCY } from '../lib/denominations';
+---
+
+<SettingsMenu />
+
+<main class="counter" data-money-counter data-layout="compact">
+	<section class="counter__hero" aria-labelledby="total-label">
+		<div class="counter__hero-topline">
+			<p id="total-label" class="counter__eyebrow">
+				<span class="counter__eyebrow-mark" aria-hidden="true"></span>
+				<span data-i18n="total">Total</span>
+			</p>
+			<div class="counter__currency-switch" role="group" aria-label="Currency" data-currency-switch>
+				<button type="button" class="counter__currency-choice is-selected" aria-pressed="true" data-currency-choice="EUR">€ <span>EUR</span></button>
+				<button type="button" class="counter__currency-choice" aria-pressed="false" data-currency-choice="USD">$ <span>USD</span></button>
+			</div>
+		</div>
+		<label class="counter__amount" data-total-display>
+			<span class="visually-hidden" data-total-currency-label>Total amount in euros</span>
+			<input
+				class="counter__total"
+				type="text"
+				inputmode="decimal"
+				autocomplete="off"
+				spellcheck="false"
+				value="0,00"
+				data-total
+			/>
+			<span class="counter__currency" aria-hidden="true" data-currency-symbol>€</span>
+		</label>
+		<button type="button" class="action-btn action-btn--ghost counter__clear" data-reset data-i18n="clearAll">
+			Clear all
+		</button>
+	</section>
+
+	<hr class="rule" />
+
+	{(['EUR', 'USD'] as const).map((currency) => {
+		const denominations = DENOMINATIONS_BY_CURRENCY[currency];
+		const coins = denominations.filter((denomination) => denomination.kind === 'coin');
+		const notes = denominations.filter((denomination) => denomination.kind === 'note');
+		return (
+			<div class="counter__currency-set" data-currency-set={currency} hidden={currency !== 'EUR'}>
+				<DenominationSection id={`coins-heading-${currency}`} kind="coin" items={coins} currency={currency} />
+				<DenominationSection id={`notes-heading-${currency}`} kind="note" items={notes} currency={currency} />
+			</div>
+		);
+	})}
+</main>
+
+<InstallBar />
+
+<script>
+	import '../scripts/money-counter.js';
+</script>

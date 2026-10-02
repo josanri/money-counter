@@ -1,0 +1,105 @@
+<header class="app-header" data-app-toolbar>
+	<div class="app-header__inner">
+		<span class="badge app-header__brand">
+			<span class="badge__mark" aria-hidden="true"></span>
+			<span data-i18n="pageTitle">Money Counter</span>
+		</span>
+
+		<details class="settings-menu">
+			<summary class="settings-menu__trigger" aria-label="Settings">
+				<span class="settings-menu__icon" aria-hidden="true"><span></span><span></span><span></span></span>
+				<span class="visually-hidden" data-i18n="settings">Settings</span>
+			</summary>
+			<div class="settings-menu__panel">
+				<div class="settings-menu__field">
+					<span class="app-toolbar__label" id="language-label" data-i18n="langLabel">Language</span>
+					<div class="settings-choice-group settings-choice-group--language" role="radiogroup" aria-labelledby="language-label">
+						<button type="button" class="settings-choice is-selected" role="radio" aria-checked="true" tabindex="0" data-locale-choice="en">
+							<span class="settings-choice__locale" aria-hidden="true">EN</span>
+							<span data-i18n="languageEnglish">English</span>
+							<span class="settings-choice__mark" aria-hidden="true"></span>
+						</button>
+						<button type="button" class="settings-choice" role="radio" aria-checked="false" tabindex="-1" data-locale-choice="es">
+							<span class="settings-choice__locale" aria-hidden="true">ES</span>
+							<span data-i18n="languageSpanish">Spanish</span>
+							<span class="settings-choice__mark" aria-hidden="true"></span>
+						</button>
+					</div>
+				</div>
+				<div class="settings-menu__field">
+					<span class="app-toolbar__label" id="palette-label" data-i18n="paletteLabel">Color theme</span>
+					<div class="palette-options" role="radiogroup" aria-labelledby="palette-label" data-palette-options>
+						<button type="button" class="palette-option is-selected" role="radio" aria-checked="true" tabindex="0" data-palette-choice="minimal">
+							<span class="palette-option__preview" data-palette-preview="minimal" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+							<span class="palette-option__name" data-i18n="paletteMinimal">Minimal</span>
+							<span class="palette-option__mark" aria-hidden="true"></span>
+						</button>
+						<button type="button" class="palette-option" role="radio" aria-checked="false" tabindex="-1" data-palette-choice="euro">
+							<span class="palette-option__preview" data-palette-preview="euro" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+							<span class="palette-option__name" data-i18n="paletteEuro">Euro</span>
+							<span class="palette-option__mark" aria-hidden="true"></span>
+						</button>
+						<button type="button" class="palette-option" role="radio" aria-checked="false" tabindex="-1" data-palette-choice="market">
+							<span class="palette-option__preview" data-palette-preview="market" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+							<span class="palette-option__name" data-i18n="paletteMarket">Market</span>
+							<span class="palette-option__mark" aria-hidden="true"></span>
+						</button>
+						<button type="button" class="palette-option" role="radio" aria-checked="false" tabindex="-1" data-palette-choice="coffee">
+							<span class="palette-option__preview" data-palette-preview="coffee" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+							<span class="palette-option__name" data-i18n="paletteCoffeeShop">Coffee Shop</span>
+							<span class="palette-option__mark" aria-hidden="true"></span>
+						</button>
+						<button type="button" class="palette-option" role="radio" aria-checked="false" tabindex="-1" data-palette-choice="fruitshop">
+							<span class="palette-option__preview" data-palette-preview="fruitshop" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+							<span class="palette-option__name" data-i18n="paletteFruitshop">Fruit Shop</span>
+							<span class="palette-option__mark" aria-hidden="true"></span>
+						</button>
+						<button type="button" class="palette-option" role="radio" aria-checked="false" tabindex="-1" data-palette-choice="butcher">
+							<span class="palette-option__preview" data-palette-preview="butcher" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+							<span class="palette-option__name" data-i18n="paletteButcher">Butcher</span>
+							<span class="palette-option__mark" aria-hidden="true"></span>
+						</button>
+					</div>
+				</div>
+				<div class="settings-menu__field">
+					<span class="app-toolbar__label" id="appearance-label" data-i18n="themeLabel">Appearance</span>
+					<div class="settings-choice-group settings-choice-group--appearance" role="radiogroup" aria-labelledby="appearance-label">
+						<button type="button" class="settings-choice is-selected" role="radio" aria-checked="true" tabindex="0" data-theme-choice="system">
+							<span class="settings-choice__preview" data-appearance-preview="system" aria-hidden="true"><span></span><span></span></span>
+							<span data-i18n="themeAuto">Auto</span>
+							<span class="settings-choice__mark" aria-hidden="true"></span>
+						</button>
+						<button type="button" class="settings-choice" role="radio" aria-checked="false" tabindex="-1" data-theme-choice="light">
+							<span class="settings-choice__preview" data-appearance-preview="light" aria-hidden="true"><span></span><span></span></span>
+							<span data-i18n="themeLight">Light</span>
+							<span class="settings-choice__mark" aria-hidden="true"></span>
+						</button>
+						<button type="button" class="settings-choice" role="radio" aria-checked="false" tabindex="-1" data-theme-choice="dark">
+							<span class="settings-choice__preview" data-appearance-preview="dark" aria-hidden="true"><span></span><span></span></span>
+							<span data-i18n="themeDark">Dark</span>
+							<span class="settings-choice__mark" aria-hidden="true"></span>
+						</button>
+					</div>
+				</div>
+				<label class="settings-toggle">
+					<span class="app-toolbar__label" data-i18n="largeControls">Large buttons</span>
+					<input class="settings-toggle__input" type="checkbox" data-large-toggle />
+					<span class="settings-toggle__track" aria-hidden="true"><span></span></span>
+				</label>
+				<div class="settings-install" data-settings-install-wrap hidden>
+					<button
+						type="button"
+						class="settings-install__button"
+						data-settings-install
+						aria-controls="settings-install-help"
+						aria-expanded="false"
+					>
+						<span class="settings-install__icon" aria-hidden="true">↓</span>
+						<span data-i18n="installTitle">Install app</span>
+					</button>
+					<p class="settings-install__hint" id="settings-install-help" data-settings-install-help aria-live="polite" hidden></p>
+				</div>
+			</div>
+		</details>
+	</div>
+</header>

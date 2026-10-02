@@ -1,0 +1,65 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	lang?: 'en' | 'es';
+}
+
+const {
+	title = 'Money Counter',
+	description = 'Count euro coins and notes. Minimal, fast, installable.',
+	lang = 'en',
+} = Astro.props;
+const baseUrl = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="description" content={description} />
+		<meta name="generator" content={Astro.generator} />
+
+		<title>{title}</title>
+
+		<link rel="icon" type="image/svg+xml" href={`${baseUrl}favicon.svg`} />
+		<link rel="apple-touch-icon" href={`${baseUrl}icons/icon-192.svg`} />
+
+		<link rel="manifest" href={`${baseUrl}manifest.webmanifest`} />
+		<meta name="app-base" content={baseUrl} />
+		<meta name="theme-color" content="#000000" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: dark)" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-title" content="Counter" />
+
+		<link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+		<link
+			href="https://fonts.bunny.net/css?family=inter:400,600,800|jetbrains-mono:400,500|nunito:400,600,800|roboto-slab:400,600,800"
+			rel="stylesheet"
+		/>
+		<script is:inline>
+			(function () {
+				try {
+					var t = localStorage.getItem('money-counter-theme-v1');
+					if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+				} catch (e) {}
+			})();
+		</script>
+	</head>
+	<body>
+		<slot />
+		<script>
+			if ('serviceWorker' in navigator) {
+				window.addEventListener('load', () => {
+					const baseUrl = document.querySelector('meta[name="app-base"]')?.getAttribute('content') ?? '/';
+					navigator.serviceWorker.register(`${baseUrl}sw.js`).catch(() => {});
+				});
+			}
+		</script>
+	</body>
+</html>

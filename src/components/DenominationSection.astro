@@ -1,0 +1,56 @@
+---
+import type { Denomination, DenominationKind } from '../lib/denominations';
+import { accentForValue } from '../lib/denomination-colors';
+
+interface Props {
+	id: string;
+	kind: DenominationKind;
+	items: readonly Denomination[];
+	currency: 'EUR' | 'USD';
+}
+
+const { id, kind, items, currency } = Astro.props;
+const headingKey = kind === 'coin' ? 'coins' : 'notes';
+---
+
+<section class="counter__section" aria-labelledby={id}>
+	<h2 id={id} class="counter__section-title" data-i18n={headingKey}>
+		{kind === 'coin' ? 'Coins' : 'Notes'}
+	</h2>
+	<ul class="counter__list">
+		{items.map((denomination) => (
+			<li
+				class="row"
+				data-row
+				data-value={denomination.value}
+				data-key={currency === 'EUR' ? denomination.value.toFixed(2) : denomination.id}
+				data-kind={kind}
+				data-currency={currency}
+				style={`--money-accent: ${accentForValue(denomination.value)}`}
+			>
+				<div class="row__identity">
+					<span class:list={['row__swatch', `row__swatch--${kind}`]} aria-hidden="true" />
+					<span class="row__label" data-denom-label>{denomination.label}</span>
+				</div>
+				<div class="row__controls">
+					<button type="button" class="row__btn" data-dec aria-label="">
+						−
+					</button>
+					<input
+						class="row__count"
+						type="number"
+						inputmode="numeric"
+						min="0"
+						step="1"
+						value="0"
+						data-count
+						aria-label=""
+					/>
+					<button type="button" class="row__btn" data-inc aria-label="">
+						+
+					</button>
+				</div>
+			</li>
+		))}
+	</ul>
+</section>
