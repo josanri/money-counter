@@ -898,6 +898,11 @@
 	color: var(--accent-foreground);
 }
 
+.row__btn:disabled {
+	background: color-mix(in srgb, var(--muted) 14%, var(--surface));
+	cursor: not-allowed;
+}
+
 .counter[data-layout='large'] {
 	--tap-min: 56px;
 }

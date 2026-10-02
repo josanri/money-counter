@@ -440,6 +440,8 @@ function syncDom(animateIncrease = true) {
 		const countElement = row.querySelector('[data-count]');
 		const count = counts[key] ?? 0;
 		if (countElement && document.activeElement !== countElement) countElement.value = String(count);
+		const decrementButton = row.querySelector('[data-dec]');
+		if (decrementButton) decrementButton.disabled = count === 0;
 		row.classList.toggle('row--active', count > 0);
 	}
 	const totalCents = computeTotalCents();
