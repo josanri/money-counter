@@ -38,7 +38,13 @@ Deploy the `dist/` folder to any static host over **HTTPS** (required for instal
 
 ## GitHub Pages
 
-The included workflow deploys on pushes to `main`. In the repository settings, choose **Settings → Pages → Build and deployment → GitHub Actions** as the source. The workflow derives the repository name and configures the project base path automatically. A project repository is published at `https://<owner>.github.io/<repository>/`.
+For the first deployment:
+
+1. Push the project to the `main` branch.
+2. In the GitHub repository, open **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**.
+3. Open **Actions → Deploy to GitHub Pages** and select **Run workflow** on `main` to deploy immediately. You do not need another commit just to trigger deployment; any later push to `main` also starts the workflow automatically.
+
+The workflow derives the repository name and configures the project base path automatically. A project repository is published at `https://<owner>.github.io/<repository>/`.
 
 ## Install on your phone
 
