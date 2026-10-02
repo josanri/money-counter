@@ -4,13 +4,12 @@ Minimal, installable web app to count euro coins (1 ct–2 €) and notes up to 
 
 ## Design
 
-Six visual presets: Minimal, Euro, Market, Coffee Shop, Fruit Shop, and Butcher. Presets shape typography, spacing, corners, controls, denomination surfaces, and coin marks. Each supports system, light, and dark appearance.
+Seven visual presets: Minimal, Swiss Minimalist, Neo Brutalism, Market, Coffee Shop, Fruit Shop, and Butcher. Presets shape typography, spacing, corners, controls, denomination surfaces, and coin marks. Each supports system, light, and dark appearance. Use **Customize** in settings to choose larger controls and show coin and note subtotals.
 
 ## Develop
 
 ```bash
 npm install
-npm run hooks:install
 npx playwright install chromium
 npm run dev
 ```
@@ -24,15 +23,13 @@ npm run build
 npm run preview
 ```
 
-## Theme pre-commit check
+## Theme screenshot gallery
 
 ```bash
-npm run themes:check
+npm run themes:gallery
 ```
 
-The pre-commit hook runs a quick check before each commit: it builds a production preview and checks all presets in light and dark appearance, compact and large controls, and mobile and desktop widths in Chromium (48 combinations). It skips screenshot generation.
-
-For the full visual matrix across Chromium, Firefox, and WebKit, install all three Playwright browsers and run `npm run themes:check`. This checks 288 combinations and saves full-page screenshots in timestamped runs, then updates `test-output/theme-matrix/index.html` as a contact sheet. The output folder is git-ignored. Set `THEME_CHECK_URL` to check an already-running app instead.
+This is a manual visual preview generator, not a test and not a commit hook. It captures every preset in system, light, and dark appearance, compact and large controls, and mobile and desktop sizes in Chromium. It saves WebP screenshots (PNG if the optional WebP encoder is unavailable) under `visual-output/theme-gallery/runs/` and creates `visual-output/theme-gallery/index.html` as a contact sheet. The generated folder is git-ignored. To capture an already-running site, set `THEME_GALLERY_URL` before running the command.
 
 Deploy the `dist/` folder to any static host over **HTTPS** (required for install).
 

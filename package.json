@@ -8,9 +8,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "hooks:install": "git config core.hooksPath .githooks",
     "icons:generate": "node scripts/generate-icons.mjs",
-    "themes:check": "node scripts/check-theme-combinations.mjs",
+    "themes:gallery": "node scripts/generate-theme-gallery.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
