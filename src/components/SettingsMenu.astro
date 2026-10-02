@@ -26,6 +26,41 @@
 						</button>
 					</div>
 				</div>
+				<button type="button" class="settings-customize" data-customize-open aria-haspopup="dialog" data-i18n="customize">Customize</button>
+				<div class="settings-install" data-settings-install-wrap hidden>
+					<button
+						type="button"
+						class="settings-install__button"
+						data-settings-install
+						aria-controls="settings-install-help"
+						aria-expanded="false"
+					>
+						<span class="settings-install__icon" aria-hidden="true">↓</span>
+						<span data-i18n="installTitle">Install app</span>
+					</button>
+					<p class="settings-install__hint" id="settings-install-help" data-settings-install-help aria-live="polite" hidden></p>
+				</div>
+			</div>
+		</details>
+		<dialog class="customize-dialog" data-customize-dialog aria-labelledby="customize-title">
+			<div class="customize-dialog__header">
+				<div>
+					<h2 id="customize-title" data-i18n="customizeTitle">Customize counter</h2>
+					<p data-i18n="customizeDescription">Choose the controls and summary details that work for you.</p>
+				</div>
+				<button type="button" class="customize-dialog__close" data-customize-close aria-label="Close">×</button>
+			</div>
+			<div class="customize-dialog__options">
+				<label class="settings-toggle">
+					<span><strong data-i18n="largeControls">Large buttons</strong><small data-i18n="largeControlsHint">Make denomination controls easier to tap.</small></span>
+					<input class="settings-toggle__input" type="checkbox" data-large-toggle />
+					<span class="settings-toggle__track" aria-hidden="true"><span></span></span>
+				</label>
+				<label class="settings-toggle">
+					<span><strong data-i18n="showBreakdown">Show coin and note subtotals</strong><small data-i18n="showBreakdownHint">Add a separate total for coins and bills.</small></span>
+					<input class="settings-toggle__input" type="checkbox" data-breakdown-toggle />
+					<span class="settings-toggle__track" aria-hidden="true"><span></span></span>
+				</label>
 				<div class="settings-menu__field">
 					<span class="app-toolbar__label" id="palette-label" data-i18n="paletteLabel">Color theme</span>
 					<div class="palette-options" role="radiogroup" aria-labelledby="palette-label" data-palette-options>
@@ -34,9 +69,14 @@
 							<span class="palette-option__name" data-i18n="paletteMinimal">Minimal</span>
 							<span class="palette-option__mark" aria-hidden="true"></span>
 						</button>
-						<button type="button" class="palette-option" role="radio" aria-checked="false" tabindex="-1" data-palette-choice="euro">
-							<span class="palette-option__preview" data-palette-preview="euro" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
-							<span class="palette-option__name" data-i18n="paletteEuro">Euro</span>
+						<button type="button" class="palette-option" role="radio" aria-checked="false" tabindex="-1" data-palette-choice="swiss">
+							<span class="palette-option__preview" data-palette-preview="swiss" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+							<span class="palette-option__name" data-i18n="paletteSwiss">Swiss Minimalist</span>
+							<span class="palette-option__mark" aria-hidden="true"></span>
+						</button>
+						<button type="button" class="palette-option" role="radio" aria-checked="false" tabindex="-1" data-palette-choice="neo">
+							<span class="palette-option__preview" data-palette-preview="neo" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+							<span class="palette-option__name" data-i18n="paletteNeo">Neo Brutalism</span>
 							<span class="palette-option__mark" aria-hidden="true"></span>
 						</button>
 						<button type="button" class="palette-option" role="radio" aria-checked="false" tabindex="-1" data-palette-choice="market">
@@ -81,25 +121,7 @@
 						</button>
 					</div>
 				</div>
-				<label class="settings-toggle">
-					<span class="app-toolbar__label" data-i18n="largeControls">Large buttons</span>
-					<input class="settings-toggle__input" type="checkbox" data-large-toggle />
-					<span class="settings-toggle__track" aria-hidden="true"><span></span></span>
-				</label>
-				<div class="settings-install" data-settings-install-wrap hidden>
-					<button
-						type="button"
-						class="settings-install__button"
-						data-settings-install
-						aria-controls="settings-install-help"
-						aria-expanded="false"
-					>
-						<span class="settings-install__icon" aria-hidden="true">↓</span>
-						<span data-i18n="installTitle">Install app</span>
-					</button>
-					<p class="settings-install__hint" id="settings-install-help" data-settings-install-help aria-live="polite" hidden></p>
-				</div>
 			</div>
-		</details>
+		</dialog>
 	</div>
 </header>

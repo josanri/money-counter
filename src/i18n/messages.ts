@@ -15,9 +15,17 @@ export type Messages = {
 	coins: string;
 	notes: string;
 	largeControls: string;
+	largeControlsHint: string;
+	customize: string;
+	customizeTitle: string;
+	customizeDescription: string;
+	showBreakdown: string;
+	showBreakdownHint: string;
+	close: string;
 	paletteLabel: string;
 	paletteMinimal: string;
-	paletteEuro: string;
+	paletteSwiss: string;
+	paletteNeo: string;
 	paletteMarket: string;
 	paletteCoffeeShop: string;
 	paletteFruitshop: string;
@@ -38,6 +46,9 @@ export type Messages = {
 	removeOneTemplate: string;
 	addOneTemplate: string;
 	countInputTemplate: string;
+	quickAdd: string;
+	addFive: string;
+	addTen: string;
 };
 
 export type ClientLocaleStrings = Omit<Messages, 'denomLabel'> & {
@@ -67,9 +78,17 @@ const en: Messages = {
 	coins: 'Coins',
 	notes: 'Notes',
 	largeControls: 'Large buttons',
+	largeControlsHint: 'Make denomination controls easier to tap.',
+	customize: 'Customize',
+	customizeTitle: 'Customize counter',
+	customizeDescription: 'Choose the controls and summary details that work for you.',
+	showBreakdown: 'Show coin and note subtotals',
+	showBreakdownHint: 'Add a separate total for coins and bills.',
+	close: 'Close',
 	paletteLabel: 'Color theme',
 	paletteMinimal: 'Minimal',
-	paletteEuro: 'Euro',
+	paletteSwiss: 'Swiss Minimalist',
+	paletteNeo: 'Neo Brutalism',
 	paletteMarket: 'Market',
 	paletteCoffeeShop: 'Coffee Shop',
 	paletteFruitshop: 'Fruit Shop',
@@ -93,6 +112,9 @@ const en: Messages = {
 	removeOneTemplate: 'Remove one {{label}}',
 	addOneTemplate: 'Add one {{label}}',
 	countInputTemplate: 'Number of {{label}}',
+	quickAdd: 'Add more',
+	addFive: 'Add five',
+	addTen: 'Add ten',
 };
 
 const es: Messages = {
@@ -110,9 +132,17 @@ const es: Messages = {
 	coins: 'Monedas',
 	notes: 'Billetes',
 	largeControls: 'Botones grandes',
+	largeControlsHint: 'Haz que los controles sean más fáciles de pulsar.',
+	customize: 'Personalizar',
+	customizeTitle: 'Personalizar contador',
+	customizeDescription: 'Elige los controles y los detalles del resumen.',
+	showBreakdown: 'Mostrar subtotales de monedas y billetes',
+	showBreakdownHint: 'Añade un total separado para monedas y billetes.',
+	close: 'Cerrar',
 	paletteLabel: 'Tema de color',
 	paletteMinimal: 'Minimalista',
-	paletteEuro: 'Euro',
+	paletteSwiss: 'Minimalismo suizo',
+	paletteNeo: 'Neobrutalismo',
 	paletteMarket: 'Mercado',
 	paletteCoffeeShop: 'Cafetería',
 	paletteFruitshop: 'Frutería',
@@ -136,6 +166,9 @@ const es: Messages = {
 	removeOneTemplate: 'Quitar una {{label}}',
 	addOneTemplate: 'Añadir una {{label}}',
 	countInputTemplate: 'Cantidad de {{label}}',
+	quickAdd: 'Añadir más',
+	addFive: 'Añadir cinco',
+	addTen: 'Añadir diez',
 };
 
 export const MESSAGES: Record<Locale, Messages> = { en, es };

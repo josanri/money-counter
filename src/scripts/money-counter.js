@@ -2,12 +2,12 @@ import { DENOMINATIONS_BY_CURRENCY } from '../lib/denominations';
 import { toClientStrings } from '../i18n/messages';
 
 const STORAGE_COUNTS = 'money-counter-counts-v1';
-const STORAGE_MANUAL_ADJUSTMENT = 'money-counter-manual-adjustment-v1';
 const STORAGE_LOCALE = 'money-counter-locale-v1';
 const STORAGE_LAYOUT = 'money-counter-layout-v1';
 const STORAGE_THEME = 'money-counter-theme-v1';
 const STORAGE_PALETTE = 'money-counter-palette-v1';
 const STORAGE_CURRENCY = 'money-counter-currency-v1';
+const STORAGE_BREAKDOWN = 'money-counter-breakdown-v1';
 const STORAGE_INSTALL_DISMISS = 'money-counter-install-dismiss-v1';
 
 const i18n = {
@@ -31,6 +31,9 @@ const settingsInstallWrap = toolbar.querySelector('[data-settings-install-wrap]'
 const settingsInstallButton = toolbar.querySelector('[data-settings-install]');
 const settingsInstallHelp = toolbar.querySelector('[data-settings-install-help]');
 const largeToggle = toolbar.querySelector('[data-large-toggle]');
+const breakdownToggle = toolbar.querySelector('[data-breakdown-toggle]');
+const breakdown = root.querySelector('[data-breakdown]');
+const customizeDialog = toolbar.querySelector('[data-customize-dialog]');
 const localeButtons = toolbar.querySelectorAll('[data-locale-choice]');
 const themeButtons = toolbar.querySelectorAll('[data-theme-choice]');
 const paletteButtons = toolbar.querySelectorAll('[data-palette-choice]');
@@ -38,11 +41,11 @@ const currencyButtons = root?.querySelectorAll('[data-currency-choice]') ?? [];
 
 let currency = loadCurrency();
 let counts = loadCounts(currency);
-let manualAdjustmentCents = loadManualAdjustment(currency);
 let locale = loadLocale();
 let layout = loadLayout();
 let theme = loadTheme();
 let palette = loadPalette();
+let showBreakdown = loadBreakdown();
 let deferredInstall = null;
 let installHelp = false;
 let settingsInstallHelpKey = null;
@@ -109,22 +112,6 @@ function saveCounts() {
 	} catch {}
 }
 
-function loadManualAdjustment(currencyCode) {
-	try {
-		const raw = localStorage.getItem(currencyStorageKey(STORAGE_MANUAL_ADJUSTMENT, currencyCode));
-		if (raw === null) return 0;
-		const saved = Number(raw);
-		if (Number.isSafeInteger(saved)) return saved;
-	} catch {}
-	return 0;
-}
-
-function saveManualAdjustment() {
-	try {
-		localStorage.setItem(currencyStorageKey(STORAGE_MANUAL_ADJUSTMENT, currency), String(manualAdjustmentCents));
-	} catch {}
-}
-
 function loadLocale() {
 	try {
 		const saved = localStorage.getItem(STORAGE_LOCALE);
@@ -171,7 +158,7 @@ function saveTheme() {
 function loadPalette() {
 	try {
 		const saved = localStorage.getItem(STORAGE_PALETTE);
-		if (saved === 'minimal' || saved === 'euro' || saved === 'market' || saved === 'coffee' || saved === 'fruitshop' || saved === 'butcher') return saved;
+		if (saved === 'minimal' || saved === 'swiss' || saved === 'neo' || saved === 'market' || saved === 'coffee' || saved === 'fruitshop' || saved === 'butcher') return saved;
 	} catch {}
 	return 'minimal';
 }
@@ -180,6 +167,18 @@ function savePalette() {
 	try {
 		localStorage.setItem(STORAGE_PALETTE, palette);
 	} catch {}
+}
+
+function loadBreakdown() {
+	try {
+		return localStorage.getItem(STORAGE_BREAKDOWN) === 'true';
+	} catch {}
+	return false;
+}
+
+function applyBreakdown() {
+	if (breakdownToggle) breakdownToggle.checked = showBreakdown;
+	if (breakdown) breakdown.hidden = !showBreakdown;
 }
 
 function applyTheme() {
@@ -191,7 +190,7 @@ function applyTheme() {
 function applyPalette() {
 	document.documentElement.setAttribute('data-palette', palette);
 	syncRadioChoices(paletteButtons, 'data-palette-choice', palette);
-	resizeTotalInput();
+	resizeTotalDisplay();
 }
 
 function syncRadioChoices(buttons, valueAttribute, selectedValue) {
@@ -240,27 +239,6 @@ function formatAmount(cents, currentLocale, currentCurrency) {
 	}).format(cents / 100);
 }
 
-function parseManualAmount(input) {
-	const value = input.trim().replace(/[\s€$]/g, '');
-	if (!value) return null;
-
-	const commaIndex = value.lastIndexOf(',');
-	const dotIndex = value.lastIndexOf('.');
-	let normalized = value;
-	if (commaIndex >= 0 && dotIndex >= 0) {
-		normalized = commaIndex > dotIndex
-			? value.replace(/\./g, '').replace(',', '.')
-			: value.replace(/,/g, '');
-	} else {
-		normalized = value.replace(',', '.');
-	}
-	if (normalized.startsWith('.')) normalized = `0${normalized}`;
-	if (!/^\d+(?:\.\d{0,2})?$/.test(normalized)) return null;
-
-	const cents = Math.round(Number(normalized) * 100);
-	return Number.isSafeInteger(cents) ? cents : null;
-}
-
 function applyLocale() {
 	document.documentElement.lang = locale;
 	document.title = t('pageTitle');
@@ -274,6 +252,7 @@ function applyLocale() {
 	}
 	syncRadioChoices(localeButtons, 'data-locale-choice', locale);
 	toolbar.querySelector('.settings-menu__trigger')?.setAttribute('aria-label', t('settings'));
+	toolbar.querySelector('[data-customize-close]')?.setAttribute('aria-label', t('close'));
 	updateSettingsInstall();
 	for (const row of root.querySelectorAll('[data-row]')) {
 		const value = Number(row.getAttribute('data-value'));
@@ -289,6 +268,10 @@ function applyLocale() {
 		);
 		row.querySelector('[data-dec]')?.setAttribute('aria-label', template(i18n[locale].removeOneTemplate, label));
 		row.querySelector('[data-inc]')?.setAttribute('aria-label', template(i18n[locale].addOneTemplate, label));
+		row.querySelector('[data-add-menu]')?.setAttribute('aria-label', t('quickAdd'));
+		for (const option of row.querySelectorAll('[data-batch-add]')) {
+			option.setAttribute('aria-label', t(option.getAttribute('data-batch-add') === '5' ? 'addFive' : 'addTen'));
+		}
 	}
 	const currencyLabel = root.querySelector('[data-total-currency-label]');
 	if (currencyLabel) currencyLabel.textContent = t(currency === 'EUR' ? 'totalAmountEuroLabel' : 'totalAmountDollarLabel');
@@ -326,16 +309,16 @@ function computeDenominationTotalCents() {
 }
 
 function computeTotalCents() {
-	return Math.max(0, computeDenominationTotalCents() + manualAdjustmentCents);
+	return computeDenominationTotalCents();
 }
 
-function resizeTotalInput() {
+function resizeTotalDisplay() {
 	if (!totalEl || !totalMeasureContext) return;
 	const currencyEl = totalDisplay?.querySelector('.counter__currency');
 	const amountStyle = window.getComputedStyle(totalDisplay);
 	const currencyStyle = currencyEl ? window.getComputedStyle(currencyEl) : null;
 	const previousScale = Number.parseFloat(totalDisplay.style.getPropertyValue('--amount-scale')) || 1;
-	const value = totalEl.value || '0';
+	const value = totalEl.textContent || '0';
 	const baseFontSize = Number.parseFloat(amountStyle.fontSize);
 	const letterSpacing = Number.parseFloat(amountStyle.letterSpacing) || 0;
 	const currencyWidth = (currencyEl?.getBoundingClientRect().width ?? 0) / previousScale;
@@ -362,7 +345,6 @@ function resizeTotalInput() {
 	const fittedWidth = measuredWidth * scale;
 	totalDisplay.style.setProperty('--amount-scale', String(scale));
 	totalDisplay.style.setProperty('--amount-font-size', `${baseFontSize * scale}px`);
-	totalEl.style.paddingRight = '0';
 	totalEl.style.width = `${Math.max(24, Math.ceil(fittedWidth + 4 * scale))}px`;
 }
 
@@ -376,10 +358,8 @@ function applyCurrency(nextCurrency, initialize = false) {
 		localStorage.setItem(STORAGE_CURRENCY, currency);
 	} catch {}
 	counts = mappedCounts;
-	if (isChangingCurrency) manualAdjustmentCents = 0;
 	valueByKey = valueMap();
 	saveCounts();
-	saveManualAdjustment();
 	root.setAttribute('data-currency', currency);
 	for (const set of root.querySelectorAll('[data-currency-set]')) {
 		set.hidden = set.getAttribute('data-currency-set') !== currency;
@@ -398,14 +378,14 @@ function applyCurrency(nextCurrency, initialize = false) {
 
 function renderTotal(cents) {
 	if (!totalEl) return;
-	totalEl.value = formatAmount(cents, locale, currency);
-	resizeTotalInput();
+	totalEl.textContent = formatAmount(cents, locale, currency);
+	resizeTotalDisplay();
 }
 
 function animateTotalIncrease(startCents, targetCents) {
 	if (!totalEl || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 		displayedTotalCents = targetCents;
-		if (document.activeElement !== totalEl) renderTotal(targetCents);
+		renderTotal(targetCents);
 		return;
 	}
 	if (totalAnimationFrame) cancelAnimationFrame(totalAnimationFrame);
@@ -421,7 +401,7 @@ function animateTotalIncrease(startCents, targetCents) {
 		const progress = Math.min((now - startedAt) / duration, 1);
 		const eased = 1 - (1 - progress) ** 3;
 		displayedTotalCents = Math.round(startCents + (targetCents - startCents) * eased);
-		if (document.activeElement !== totalEl) renderTotal(displayedTotalCents);
+		renderTotal(displayedTotalCents);
 		if (progress < 1) {
 			totalAnimationFrame = requestAnimationFrame(animateFrame);
 		} else {
@@ -444,17 +424,28 @@ function syncDom(animateIncrease = true) {
 		if (decrementButton) decrementButton.disabled = count === 0;
 		row.classList.toggle('row--active', count > 0);
 	}
+	if (breakdown) {
+		for (const kind of ['coin', 'note']) {
+			let subtotalCents = 0;
+			for (const denomination of activeDenominations()) {
+				if (denomination.kind !== kind) continue;
+				const key = currency === 'EUR' ? denomination.value.toFixed(2) : denomination.id;
+				subtotalCents += Math.round(denomination.value * 100) * (counts[key] ?? 0);
+			}
+			const output = breakdown.querySelector(`[data-breakdown-total="${kind}"]`);
+			if (output) output.textContent = formatAmount(subtotalCents, locale, currency);
+		}
+	}
 	const totalCents = computeTotalCents();
-	const editingTotal = document.activeElement === totalEl;
+	if (resetBtn) resetBtn.disabled = totalCents === 0;
 	const currentDisplayCents = displayedTotalCents ?? lastTotalCents;
-	if (animateIncrease && !editingTotal && currentDisplayCents !== null && totalCents > currentDisplayCents) {
+	if (animateIncrease && currentDisplayCents !== null && totalCents > currentDisplayCents) {
 		animateTotalIncrease(currentDisplayCents, totalCents);
 	} else {
 		if (totalAnimationFrame) cancelAnimationFrame(totalAnimationFrame);
 		totalAnimationFrame = 0;
 		displayedTotalCents = totalCents;
-		if (editingTotal) resizeTotalInput();
-		else renderTotal(totalCents);
+		renderTotal(totalCents);
 	}
 	lastTotalCents = totalCents;
 }
@@ -465,6 +456,19 @@ function setCount(value, delta, key = value.toFixed(2)) {
 	else counts[key] = next;
 	saveCounts();
 	syncDom();
+}
+
+function closeQuickAddMenus(restoreFocus = false) {
+	const openRows = Array.from(root.querySelectorAll('.row--quick-add-open'));
+	for (const row of openRows) {
+		row.classList.remove('row--quick-add-open');
+		const trigger = row.querySelector('[data-inc]');
+		trigger?.setAttribute('aria-expanded', 'false');
+		if (trigger) trigger.dataset.longPressOpened = 'false';
+		const menu = row.querySelector('[data-add-menu]');
+		if (menu) menu.hidden = true;
+	}
+	if (restoreFocus) openRows[0]?.querySelector('[data-inc]')?.focus();
 }
 
 function isStandalone() {
@@ -555,7 +559,71 @@ async function promptInstall() {
 for (const row of root.querySelectorAll('[data-row]')) {
 	const value = Number(row.getAttribute('data-value'));
 	const key = row.getAttribute('data-key') ?? value.toFixed(2);
-	row.querySelector('[data-inc]')?.addEventListener('click', () => setCount(value, 1, key));
+	const addButton = row.querySelector('[data-inc]');
+	const addMenu = row.querySelector('[data-add-menu]');
+	let holdTimer = 0;
+	const clearHoldTimer = () => {
+		if (holdTimer) window.clearTimeout(holdTimer);
+		holdTimer = 0;
+	};
+	const openAddMenu = () => {
+		closeQuickAddMenus();
+		if (!addMenu || !addButton) return;
+		addMenu.hidden = false;
+		addButton.setAttribute('aria-expanded', 'true');
+		addButton.dataset.longPressOpened = 'true';
+		row.classList.add('row--quick-add-open');
+		addMenu.querySelector('button')?.focus();
+	};
+	addButton?.addEventListener('pointerdown', (event) => {
+		if (!event.isPrimary || event.button !== 0) return;
+		clearHoldTimer();
+		holdTimer = window.setTimeout(openAddMenu, 500);
+	});
+	for (const eventName of ['pointerup', 'pointerleave', 'pointercancel']) {
+		addButton?.addEventListener(eventName, clearHoldTimer);
+	}
+	addButton?.addEventListener('contextmenu', (event) => {
+		event.preventDefault();
+		openAddMenu();
+	});
+	addButton?.addEventListener('keydown', (event) => {
+		if (event.key !== 'ArrowDown') return;
+		event.preventDefault();
+		openAddMenu();
+	});
+	addButton?.addEventListener('click', (event) => {
+		if (addButton.dataset.longPressOpened === 'true') {
+			event.preventDefault();
+			return;
+		}
+		setCount(value, 1, key);
+	});
+	for (const option of row.querySelectorAll('[data-batch-add]')) {
+		option.addEventListener('click', () => {
+			const amount = Number(option.getAttribute('data-batch-add'));
+			closeQuickAddMenus();
+			setCount(value, amount, key);
+			addButton?.focus();
+		});
+	}
+	addMenu?.addEventListener('keydown', (event) => {
+		const options = Array.from(addMenu.querySelectorAll('[data-batch-add]'));
+		const currentIndex = options.indexOf(document.activeElement);
+		if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+			event.preventDefault();
+			options[(currentIndex + 1) % options.length]?.focus();
+		} else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+			event.preventDefault();
+			options[(currentIndex - 1 + options.length) % options.length]?.focus();
+		} else if (event.key === 'Home') {
+			event.preventDefault();
+			options[0]?.focus();
+		} else if (event.key === 'End') {
+			event.preventDefault();
+			options.at(-1)?.focus();
+		}
+	});
 	row.querySelector('[data-dec]')?.addEventListener('click', () => setCount(value, -1, key));
 	const countInput = row.querySelector('[data-count]');
 	countInput?.addEventListener('input', () => {
@@ -570,28 +638,26 @@ for (const row of root.querySelectorAll('[data-row]')) {
 	countInput?.addEventListener('blur', () => syncDom(false));
 }
 
-totalEl?.addEventListener('input', () => {
-	const enteredCents = parseManualAmount(totalEl.value);
-	if (enteredCents === null) return;
-	manualAdjustmentCents = enteredCents - computeDenominationTotalCents();
-	saveManualAdjustment();
-	syncDom(false);
+document.addEventListener('pointerdown', (event) => {
+	if (!(event.target instanceof Element)) return;
+	const openRow = event.target.closest('.row--quick-add-open');
+	if (!openRow || !event.target.closest('[data-add-menu]')) closeQuickAddMenus();
 });
-
-totalEl?.addEventListener('blur', () => syncDom(false));
-totalEl?.addEventListener('focus', () => {
-	if (!totalAnimationFrame) return;
-	cancelAnimationFrame(totalAnimationFrame);
-	totalAnimationFrame = 0;
-	displayedTotalCents = computeTotalCents();
-	renderTotal(displayedTotalCents);
+document.addEventListener('focusin', (event) => {
+	if (!(event.target instanceof Element)) return;
+	const openRow = root.querySelector('.row--quick-add-open');
+	if (openRow && !openRow.contains(event.target)) closeQuickAddMenus();
+});
+document.addEventListener('keydown', (event) => {
+	if (event.key === 'Escape' && root.querySelector('.row--quick-add-open')) {
+		event.preventDefault();
+		closeQuickAddMenus(true);
+	}
 });
 
 resetBtn?.addEventListener('click', () => {
 	counts = {};
-	manualAdjustmentCents = 0;
 	saveCounts();
-	saveManualAdjustment();
 	syncDom();
 });
 
@@ -612,6 +678,23 @@ largeToggle?.addEventListener('change', () => {
 	applyLayout();
 });
 
+breakdownToggle?.addEventListener('change', () => {
+	showBreakdown = breakdownToggle.checked;
+	try {
+		localStorage.setItem(STORAGE_BREAKDOWN, String(showBreakdown));
+	} catch {}
+	applyBreakdown();
+	syncDom(false);
+});
+
+toolbar.querySelector('[data-customize-open]')?.addEventListener('click', () => {
+	if (customizeDialog instanceof HTMLDialogElement) customizeDialog.showModal();
+});
+toolbar.querySelector('[data-customize-close]')?.addEventListener('click', () => customizeDialog?.close());
+customizeDialog?.addEventListener('click', (event) => {
+	if (event.target === customizeDialog) customizeDialog.close();
+});
+
 bindRadioChoices(themeButtons, 'data-theme-choice', (next) => {
 	if (next !== 'system' && next !== 'light' && next !== 'dark') return;
 	theme = next;
@@ -620,7 +703,7 @@ bindRadioChoices(themeButtons, 'data-theme-choice', (next) => {
 });
 
 function selectPalette(next) {
-	if (next !== 'minimal' && next !== 'euro' && next !== 'market' && next !== 'coffee' && next !== 'fruitshop' && next !== 'butcher') return;
+	if (next !== 'minimal' && next !== 'swiss' && next !== 'neo' && next !== 'market' && next !== 'coffee' && next !== 'fruitshop' && next !== 'butcher') return;
 	palette = next;
 	savePalette();
 	applyPalette();
@@ -678,12 +761,13 @@ installDismiss?.addEventListener('click', () => {
 
 window.addEventListener('resize', () => {
 	updateInstallBarOffset();
-	resizeTotalInput();
+	resizeTotalDisplay();
 });
 
 applyTheme();
 applyPalette();
 applyLayout();
+applyBreakdown();
 applyCurrency(currency, true);
 applyLocale();
 showInstallBarIfNeeded();

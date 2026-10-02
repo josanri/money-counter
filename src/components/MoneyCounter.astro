@@ -20,22 +20,24 @@ import { DENOMINATIONS_BY_CURRENCY } from '../lib/denominations';
 				<button type="button" class="counter__currency-choice" aria-pressed="false" data-currency-choice="USD">$ <span>USD</span></button>
 			</div>
 		</div>
-		<label class="counter__amount" data-total-display>
-			<span class="visually-hidden" data-total-currency-label>Total amount in euros</span>
-			<input
-				class="counter__total"
-				type="text"
-				inputmode="decimal"
-				autocomplete="off"
-				spellcheck="false"
-				value="0,00"
-				data-total
-			/>
+		<div class="counter__amount" data-total-display>
+			<span class="visually-hidden" id="total-currency-label">Total amount in euros</span>
+			<output class="counter__total" aria-labelledby="total-label total-currency-label" data-total>0,00</output>
 			<span class="counter__currency" aria-hidden="true" data-currency-symbol>€</span>
-		</label>
+		</div>
 		<button type="button" class="action-btn action-btn--ghost counter__clear" data-reset data-i18n="clearAll">
 			Clear all
 		</button>
+		<div class="counter__breakdown" data-breakdown hidden>
+			<div class="counter__breakdown-item">
+				<span data-i18n="coins">Coins</span>
+				<strong data-breakdown-total="coin">€0.00</strong>
+			</div>
+			<div class="counter__breakdown-item">
+				<span data-i18n="notes">Notes</span>
+				<strong data-breakdown-total="note">€0.00</strong>
+			</div>
+		</div>
 	</section>
 
 	<hr class="rule" />

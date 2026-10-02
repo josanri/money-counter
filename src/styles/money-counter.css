@@ -88,6 +88,69 @@
 	border-radius: var(--control-radius);
 }
 
+.settings-customize {
+	min-height: var(--tap-min);
+	padding-inline: 0.8rem;
+	font-size: 0.7rem;
+	font-weight: 700;
+	text-align: left;
+	color: var(--accent-foreground);
+	background: var(--accent);
+	border: 1px solid var(--accent);
+	border-radius: var(--control-radius);
+}
+
+.customize-dialog {
+	width: min(28rem, calc(100vw - 2rem));
+	max-width: none;
+	max-height: min(85dvh, 36rem);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	margin: auto;
+	padding: 1.25rem;
+	color: var(--fg);
+	background: var(--bg);
+	border: 1px solid var(--line);
+	border-radius: calc(var(--control-radius) + 4px);
+	box-shadow: 0 18px 50px rgb(0 0 0 / 24%);
+}
+
+.customize-dialog::backdrop {
+	background: rgb(18 12 8 / 52%);
+	backdrop-filter: blur(3px);
+}
+
+.customize-dialog__header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 1.2rem;
+}
+
+.customize-dialog__header h2 { margin: 0; font-size: 1.15rem; font-weight: 750; }
+.customize-dialog__header p { margin: 0.35rem 0 0; font-size: 0.75rem; color: var(--muted); }
+
+.customize-dialog__close {
+	display: grid;
+	place-items: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	flex: 0 0 auto;
+	font-size: 1.5rem;
+	line-height: 1;
+	border: 1px solid var(--line);
+	border-radius: var(--control-radius);
+}
+
+.customize-dialog__close:focus-visible,
+.settings-customize:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.customize-dialog__options { display: grid; gap: 0.6rem; }
+.customize-dialog .settings-toggle { min-height: 4.5rem; padding: 0.8rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--control-radius); }
+.customize-dialog .settings-toggle > span:first-child { display: grid; gap: 0.2rem; }
+.customize-dialog .settings-toggle strong { font-size: 0.75rem; }
+.customize-dialog .settings-toggle small { font-size: 0.625rem; font-weight: 400; color: var(--muted); }
+
 .settings-menu__field {
 	display: flex;
 	flex-direction: column;
@@ -281,13 +344,23 @@
 	--option-radius: 0px;
 }
 
-.palette-option[data-palette-choice='euro'] {
-	--option-bg: #f1f5f7;
-	--option-fg: #123247;
-	--option-line: #7896a6;
-	--option-accent: #167d9f;
+.palette-option[data-palette-choice='swiss'] {
+	--option-bg: #f5f5f2;
+	--option-fg: #17191b;
+	--option-line: #c9cbca;
+	--option-accent: #d5222a;
 	--option-font: 'Inter', system-ui, sans-serif;
 	--option-radius: 4px;
+}
+
+.palette-option[data-palette-choice='neo'] {
+	--option-bg: #fff4cf;
+	--option-fg: #171717;
+	--option-line: #171717;
+	--option-accent: #ff6047;
+	--option-font: 'Arial Black', 'Segoe UI', sans-serif;
+	--option-radius: 0px;
+	box-shadow: 3px 3px 0 #171717;
 }
 
 .palette-option[data-palette-choice='market'] {
@@ -300,12 +373,12 @@
 }
 
 .palette-option[data-palette-choice='coffee'] {
-	--option-bg: #f7f0e6;
-	--option-fg: #3b261c;
-	--option-line: #d4bca5;
-	--option-accent: #a65e2e;
-	--option-font: 'Roboto Slab', Georgia, serif;
-	--option-radius: 6px;
+	--option-bg: #fbf7f2;
+	--option-fg: #2a1a14;
+	--option-line: #e2d2c0;
+	--option-accent: #c86341;
+	--option-font: 'Segoe UI', system-ui, sans-serif;
+	--option-radius: 10px;
 }
 
 .palette-option[data-palette-choice='fruitshop'] {
@@ -378,15 +451,26 @@
 	--preview-coin-radius: 50%;
 }
 
-.palette-option__preview[data-palette-preview='euro'] {
-	--preview-bg: #f1f5f7;
-	--preview-fg: #123247;
-	--preview-line: #7896a6;
-	--preview-accent: #167d9f;
+.palette-option__preview[data-palette-preview='swiss'] {
+	--preview-bg: #f5f5f2;
+	--preview-fg: #17191b;
+	--preview-line: #c9cbca;
+	--preview-accent: #d5222a;
 	--preview-coin: #e3c566;
 	--preview-secondary: #9a9a9a;
 	--preview-radius: 4px;
 	--preview-coin-radius: 50%;
+}
+
+.palette-option__preview[data-palette-preview='neo'] {
+	--preview-bg: #fff4cf;
+	--preview-fg: #171717;
+	--preview-line: #171717;
+	--preview-accent: #ff6047;
+	--preview-coin: #ffc83d;
+	--preview-secondary: #43b6a2;
+	--preview-radius: 0px;
+	--preview-coin-radius: 0px;
 }
 
 .palette-option__preview[data-palette-preview='market'] {
@@ -401,13 +485,13 @@
 }
 
 .palette-option__preview[data-palette-preview='coffee'] {
-	--preview-bg: #f7f0e6;
-	--preview-fg: #3b261c;
-	--preview-line: #d4bca5;
-	--preview-accent: #a65e2e;
-	--preview-coin: #c58b45;
-	--preview-secondary: #6f4730;
-	--preview-radius: 5px;
+	--preview-bg: #fbf7f2;
+	--preview-fg: #2a1a14;
+	--preview-line: #e2d2c0;
+	--preview-accent: #c86341;
+	--preview-coin: #c78832;
+	--preview-secondary: #754737;
+	--preview-radius: 9px;
 	--preview-coin-radius: 45% 55% 50% 50%;
 }
 
@@ -599,6 +683,13 @@
 	opacity: 0.75;
 }
 
+.action-btn:disabled {
+	color: var(--muted);
+	background: color-mix(in srgb, var(--muted) 10%, var(--bg));
+	border-color: color-mix(in srgb, var(--line) 70%, var(--bg));
+	cursor: not-allowed;
+}
+
 .counter {
 	max-width: 40rem;
 	margin: 0 auto;
@@ -707,6 +798,7 @@
 }
 
 .counter__total {
+	display: block;
 	width: 3ch;
 	min-width: 0;
 	max-width: 100%;
@@ -716,17 +808,11 @@
 	font-size: var(--amount-font-size, 1em);
 	letter-spacing: inherit;
 	text-align: right;
+	white-space: nowrap;
 	color: var(--fg);
 	background: transparent;
 	border: 0;
-	border-bottom: 2px solid transparent;
 	border-radius: 0;
-	outline: none;
-	caret-color: var(--accent);
-}
-
-.counter__total:focus-visible {
-	border-bottom-color: var(--accent);
 }
 
 .counter__currency {
@@ -787,6 +873,15 @@
 	background: transparent;
 }
 
+.row--quick-add-open {
+	position: relative;
+	z-index: 8;
+}
+
+.row--quick-add-open .row__controls {
+	overflow: visible;
+}
+
 .row--active .row__label {
 	font-weight: 700;
 	color: var(--accent);
@@ -826,6 +921,7 @@
 }
 
 .row__controls {
+	position: relative;
 	display: grid;
 	grid-template-columns: var(--tap-min) minmax(3.25rem, 4rem) var(--tap-min);
 	align-items: stretch;
@@ -835,6 +931,13 @@
 	box-shadow: var(--control-shadow);
 	overflow: hidden;
 	flex-shrink: 0;
+}
+
+.row__add-wrap {
+	position: relative;
+	display: block;
+	min-width: 0;
+	height: 100%;
 }
 
 .row__count {
@@ -889,14 +992,75 @@
 	touch-action: manipulation;
 }
 
-.row__btn:last-child {
+.row__add-wrap > .row__btn {
 	border-right: 0;
+}
+
+.row__quick-add {
+	position: absolute;
+	right: 0;
+	bottom: calc(100% + 0.4rem);
+	z-index: 20;
+	display: flex;
+	gap: 0.35rem;
+	padding: 0.35rem;
+	background: var(--surface);
+	border: 1px solid var(--line);
+	border-radius: var(--control-radius);
+	box-shadow: 0 5px 16px rgb(0 0 0 / 16%);
+}
+
+.row__quick-add[hidden] {
+	display: none;
+}
+
+.row__quick-add button {
+	min-width: 3.1rem;
+	min-height: 2.5rem;
+	padding: 0.4rem;
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	font-weight: 700;
+	color: var(--accent-foreground);
+	background: var(--accent);
+	border-radius: max(0px, calc(var(--control-radius) - 2px));
+}
+
+.row__quick-add button:hover,
+.row__quick-add button:focus-visible {
+	filter: brightness(1.08);
+}
+
+.row__quick-add button:focus-visible {
+	outline: 2px solid var(--fg);
+	outline-offset: 2px;
 }
 
 .row__btn:active {
 	background: var(--accent);
 	color: var(--accent-foreground);
 }
+
+.counter__breakdown {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.6rem;
+	margin-top: 0.9rem;
+}
+
+.counter__breakdown-item {
+	display: grid;
+	gap: 0.2rem;
+	min-width: 0;
+	padding: 0.55rem 0.65rem;
+	font-size: 0.625rem;
+	color: var(--muted);
+	background: var(--surface);
+	border: 1px solid var(--line);
+	border-radius: var(--control-radius);
+}
+
+.counter__breakdown-item strong { font-family: var(--font-mono); font-size: 0.875rem; font-variant-numeric: tabular-nums; color: var(--fg); }
 
 .row__btn:disabled {
 	background: color-mix(in srgb, var(--muted) 14%, var(--surface));
@@ -1113,7 +1277,8 @@
 	padding: calc(var(--row-padding-block) + 0.2rem) var(--row-padding-inline);
 }
 
-:root[data-palette='euro'] .counter__list,
+:root[data-palette='swiss'] .counter__list,
+:root[data-palette='neo'] .counter__list,
 :root[data-palette='market'] .counter__list,
 :root[data-palette='coffee'] .counter__list,
 :root[data-palette='fruitshop'] .counter__list,
@@ -1121,7 +1286,8 @@
 	border-top: 0;
 }
 
-:root[data-palette='euro'] .row,
+:root[data-palette='swiss'] .row,
+:root[data-palette='neo'] .row,
 :root[data-palette='market'] .row,
 :root[data-palette='coffee'] .row,
 :root[data-palette='fruitshop'] .row,
@@ -1130,14 +1296,14 @@
 	background: color-mix(in srgb, var(--money-accent) 6%, var(--surface));
 }
 
-:root[data-palette='euro'] .row__swatch--coin {
+:root[data-palette='swiss'] .row__swatch--coin {
 	display: grid;
 	place-items: center;
 	background: radial-gradient(circle at 32% 28%, color-mix(in srgb, #fff 78%, var(--money-accent)), var(--money-accent) 62%, color-mix(in srgb, var(--money-accent) 70%, var(--fg)));
 	border: 1px solid color-mix(in srgb, var(--money-accent) 72%, var(--fg));
 }
 
-:root[data-palette='euro'] .row__swatch--coin::after {
+:root[data-palette='swiss'] .row__swatch--coin::after {
 	content: '\20AC';
 	color: var(--fg);
 	font-family: var(--font-mono);
@@ -1155,7 +1321,15 @@
 }
 
 :root[data-palette='coffee'] .row {
-	box-shadow: inset 3px 0 0 var(--money-accent);
+	box-shadow: inset 3px 0 0 var(--money-accent), 0 2px 6px rgb(61 36 28 / 5%);
+}
+
+:root[data-palette='coffee'] .counter__hero {
+	padding-inline: 1rem;
+	background: linear-gradient(145deg, var(--surface), color-mix(in srgb, #e9dec9 55%, var(--bg)));
+	border: 1px solid color-mix(in srgb, #754737 15%, var(--line));
+	border-radius: 18px;
+	box-shadow: 0 4px 12px rgb(61 36 28 / 7%);
 }
 
 :root[data-palette='coffee'] .row__swatch--coin {
@@ -1200,4 +1374,22 @@
 :root[data-palette='butcher'] .row__swatch--coin {
 	background: radial-gradient(circle, var(--money-accent) 55%, color-mix(in srgb, var(--money-accent) 60%, var(--fg)) 57% 70%, var(--surface) 72%);
 	box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 25%, transparent), 0 0 0 1px var(--line);
+}
+
+:root[data-palette='neo'] .counter__hero {
+	padding-inline: 1rem;
+	background: var(--surface);
+	border: 2px solid var(--fg);
+	box-shadow: 5px 5px 0 var(--fg);
+}
+
+:root[data-palette='neo'] .row {
+	border: 2px solid var(--fg);
+	background: var(--surface);
+	box-shadow: 3px 3px 0 var(--fg);
+}
+
+:root[data-palette='neo'] .row__swatch--coin {
+	border-radius: 0;
+	background: var(--money-accent);
 }

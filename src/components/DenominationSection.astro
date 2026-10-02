@@ -46,9 +46,15 @@ const headingKey = kind === 'coin' ? 'coins' : 'notes';
 						data-count
 						aria-label=""
 					/>
-					<button type="button" class="row__btn" data-inc aria-label="">
-						+
-					</button>
+					<span class="row__add-wrap">
+						<button type="button" class="row__btn" data-inc aria-label="" aria-haspopup="menu" aria-expanded="false" aria-controls={`quick-add-${currency}-${denomination.id}`}>
+							+
+						</button>
+						<span class="row__quick-add" id={`quick-add-${currency}-${denomination.id}`} data-add-menu role="menu" aria-label="Add more" hidden>
+							<button type="button" role="menuitem" data-batch-add="5">+5</button>
+							<button type="button" role="menuitem" data-batch-add="10">+10</button>
+						</span>
+					</span>
 				</div>
 			</li>
 		))}
