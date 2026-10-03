@@ -9,6 +9,7 @@ const STORAGE_PALETTE = 'money-counter-palette-v1';
 const STORAGE_CURRENCY = 'money-counter-currency-v1';
 const STORAGE_BREAKDOWN = 'money-counter-breakdown-v1';
 const STORAGE_INSTALL_DISMISS = 'money-counter-install-dismiss-v1';
+const STORAGE_SAVED_ACCOUNTS = 'money-counter-saved-accounts-v1';
 
 const i18n = {
 	en: toClientStrings('en'),
@@ -34,6 +35,11 @@ const largeToggle = toolbar.querySelector('[data-large-toggle]');
 const breakdownToggle = toolbar.querySelector('[data-breakdown-toggle]');
 const breakdown = root.querySelector('[data-breakdown]');
 const customizeDialog = toolbar.querySelector('[data-customize-dialog]');
+const accountsDialog = toolbar.querySelector('[data-accounts-dialog]');
+const accountsList = toolbar.querySelector('[data-accounts-list]');
+const accountsEmpty = toolbar.querySelector('[data-accounts-empty]');
+const accountsStatus = toolbar.querySelector('[data-account-status]');
+const accountNameInput = toolbar.querySelector('[data-account-name]');
 const localeButtons = toolbar.querySelectorAll('[data-locale-choice]');
 const themeButtons = toolbar.querySelectorAll('[data-theme-choice]');
 const paletteButtons = toolbar.querySelectorAll('[data-palette-choice]');
@@ -46,6 +52,7 @@ let layout = loadLayout();
 let theme = loadTheme();
 let palette = loadPalette();
 let showBreakdown = loadBreakdown();
+let savedAccounts = loadSavedAccounts();
 let deferredInstall = null;
 let installHelp = false;
 let settingsInstallHelpKey = null;
@@ -110,6 +117,114 @@ function saveCounts() {
 	try {
 		localStorage.setItem(currencyStorageKey(STORAGE_COUNTS, currency), JSON.stringify(counts));
 	} catch {}
+}
+
+function loadSavedAccounts() {
+	try {
+		const parsed = JSON.parse(localStorage.getItem(STORAGE_SAVED_ACCOUNTS) || '[]');
+		if (!Array.isArray(parsed)) return [];
+		return parsed.filter((account) => account && typeof account.id === 'string'
+			&& typeof account.name === 'string' && (account.currency === 'EUR' || account.currency === 'USD')
+			&& account.counts && typeof account.counts === 'object').map((account) => {
+				const allowed = new Set(activeDenominations(account.currency).map((denomination) => account.currency === 'EUR' ? denomination.value.toFixed(2) : denomination.id));
+				const safeCounts = {};
+				for (const [key, count] of Object.entries(account.counts)) {
+					if (allowed.has(key) && Number.isSafeInteger(count) && count > 0) safeCounts[key] = count;
+				}
+				return { id: account.id, name: account.name.slice(0, 48), currency: account.currency, counts: safeCounts, createdAt: typeof account.createdAt === 'string' ? account.createdAt : '' };
+			});
+	} catch { return []; }
+}
+
+function persistSavedAccounts() {
+	try { localStorage.setItem(STORAGE_SAVED_ACCOUNTS, JSON.stringify(savedAccounts)); } catch {}
+}
+
+function renderSavedAccounts() {
+	if (!(accountsList instanceof HTMLUListElement)) return;
+	accountsList.replaceChildren();
+	if (accountsEmpty) accountsEmpty.hidden = savedAccounts.length > 0;
+	for (const account of savedAccounts) {
+		const item = document.createElement('li');
+		item.className = 'accounts-list__item';
+		const info = document.createElement('div');
+		info.className = 'accounts-list__info';
+		const name = document.createElement('strong');
+		name.className = 'accounts-list__name';
+		name.textContent = account.name;
+		const valueCents = activeDenominations(account.currency).reduce((sum, denomination) => {
+			const key = account.currency === 'EUR' ? denomination.value.toFixed(2) : denomination.id;
+			const count = account.counts[key] || 0;
+			return sum + Math.round(denomination.value * 100) * count;
+		}, 0);
+		const summary = document.createElement('span');
+		summary.className = 'accounts-list__summary';
+		summary.textContent = `${formatAmount(valueCents, locale, account.currency)} ${account.currency}`;
+		if (account.createdAt) {
+			const date = new Date(account.createdAt);
+			if (!Number.isNaN(date.valueOf())) summary.textContent += ` · ${new Intl.DateTimeFormat(locale === 'es' ? 'es-ES' : 'en-US', { dateStyle: 'medium' }).format(date)}`;
+		}
+		info.append(name, summary);
+		const actions = document.createElement('div');
+		actions.className = 'accounts-list__actions';
+		for (const [action, key] of [['load', 'loadAccount'], ['rename', 'renameAccount'], ['delete', 'deleteAccount']]) {
+			const button = document.createElement('button');
+			button.type = 'button';
+			button.className = `accounts-list__action${action === 'delete' ? ' accounts-list__action--delete' : ''}`;
+			button.textContent = t(key);
+			button.setAttribute('aria-label', `${t(key)}: ${account.name}`);
+			button.addEventListener('click', () => {
+				if (action === 'load') {
+					if (currency !== account.currency) applyCurrency(account.currency);
+					counts = { ...account.counts };
+					valueByKey = valueMap();
+					saveCounts();
+					syncDom(false);
+					if (accountsStatus) accountsStatus.textContent = t('accountLoaded');
+					accountsDialog?.close();
+				} else if (action === 'rename') {
+					info.hidden = true;
+					actions.hidden = true;
+					const form = document.createElement('form');
+					form.className = 'accounts-rename';
+					const input = document.createElement('input');
+					input.type = 'text';
+					input.value = account.name;
+					input.maxLength = 48;
+					input.required = true;
+					input.setAttribute('aria-label', t('accountNameLabel'));
+					const save = document.createElement('button');
+					save.type = 'submit';
+					save.className = 'accounts-list__action';
+					save.textContent = t('accountRenameSave');
+					const cancel = document.createElement('button');
+					cancel.type = 'button';
+					cancel.className = 'accounts-list__action';
+					cancel.textContent = t('accountRenameCancel');
+					cancel.addEventListener('click', renderSavedAccounts);
+					form.append(input, save, cancel);
+					form.addEventListener('submit', (submitEvent) => {
+						submitEvent.preventDefault();
+						const nextName = input.value.trim();
+						if (!nextName) { input.focus(); return; }
+						account.name = nextName.slice(0, 48);
+						persistSavedAccounts();
+						renderSavedAccounts();
+					});
+					item.insertBefore(form, actions);
+					input.focus();
+				} else if (window.confirm(t('confirmDeleteAccount'))) {
+					savedAccounts = savedAccounts.filter((saved) => saved.id !== account.id);
+					persistSavedAccounts();
+					renderSavedAccounts();
+					if (accountsStatus) accountsStatus.textContent = t('accountDeleted');
+				}
+			});
+			actions.append(button);
+		}
+		item.append(info, actions);
+		accountsList.append(item);
+	}
 }
 
 function loadLocale() {
@@ -253,6 +368,9 @@ function applyLocale() {
 	syncRadioChoices(localeButtons, 'data-locale-choice', locale);
 	toolbar.querySelector('.settings-menu__trigger')?.setAttribute('aria-label', t('settings'));
 	toolbar.querySelector('[data-customize-close]')?.setAttribute('aria-label', t('close'));
+	toolbar.querySelector('[data-accounts-close]')?.setAttribute('aria-label', t('close'));
+	if (accountNameInput) accountNameInput.setAttribute('placeholder', t('accountNamePlaceholder'));
+	renderSavedAccounts();
 	updateSettingsInstall();
 	for (const row of root.querySelectorAll('[data-row]')) {
 		const value = Number(row.getAttribute('data-value'));
@@ -693,6 +811,32 @@ toolbar.querySelector('[data-customize-open]')?.addEventListener('click', () => 
 toolbar.querySelector('[data-customize-close]')?.addEventListener('click', () => customizeDialog?.close());
 customizeDialog?.addEventListener('click', (event) => {
 	if (event.target === customizeDialog) customizeDialog.close();
+});
+toolbar.querySelector('[data-accounts-open]')?.addEventListener('click', () => {
+	if (accountsStatus) accountsStatus.textContent = '';
+	renderSavedAccounts();
+	if (accountsDialog instanceof HTMLDialogElement) accountsDialog.showModal();
+});
+toolbar.querySelector('[data-accounts-close]')?.addEventListener('click', () => accountsDialog?.close());
+accountsDialog?.addEventListener('click', (event) => {
+	if (event.target === accountsDialog) accountsDialog.close();
+});
+toolbar.querySelector('[data-account-save-form]')?.addEventListener('submit', (event) => {
+	event.preventDefault();
+	const typedName = accountNameInput instanceof HTMLInputElement ? accountNameInput.value.trim() : '';
+	const nextNumber = savedAccounts.length + 1;
+	const name = typedName || t('accountDefaultName').replace('{{number}}', String(nextNumber));
+	savedAccounts.unshift({
+		id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+		name: name.slice(0, 48),
+		currency,
+		counts: { ...counts },
+		createdAt: new Date().toISOString(),
+	});
+	persistSavedAccounts();
+	if (accountNameInput instanceof HTMLInputElement) accountNameInput.value = '';
+	if (accountsStatus) accountsStatus.textContent = t('accountSaved');
+	renderSavedAccounts();
 });
 
 bindRadioChoices(themeButtons, 'data-theme-choice', (next) => {

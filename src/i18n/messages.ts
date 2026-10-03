@@ -19,6 +19,24 @@ export type Messages = {
 	customize: string;
 	customizeTitle: string;
 	customizeDescription: string;
+	savedAccountsMenu: string;
+	savedAccountsTitle: string;
+	savedAccountsDescription: string;
+	accountNameLabel: string;
+	accountNamePlaceholder: string;
+	saveAccount: string;
+	noSavedAccounts: string;
+	loadAccount: string;
+	renameAccount: string;
+	deleteAccount: string;
+	accountDefaultName: string;
+	accountSaved: string;
+	accountLoaded: string;
+	accountDeleted: string;
+	confirmDeleteAccount: string;
+	accountNamePrompt: string;
+	accountRenameSave: string;
+	accountRenameCancel: string;
 	showBreakdown: string;
 	showBreakdownHint: string;
 	close: string;
@@ -82,6 +100,24 @@ const en: Messages = {
 	customize: 'Customize',
 	customizeTitle: 'Customize counter',
 	customizeDescription: 'Choose the controls and summary details that work for you.',
+	savedAccountsMenu: 'Saved accounts',
+	savedAccountsTitle: 'Saved accounts',
+	savedAccountsDescription: 'Save this count and return to it later.',
+	accountNameLabel: 'Account name',
+	accountNamePlaceholder: 'For example, Friday market',
+	saveAccount: 'Save current',
+	noSavedAccounts: 'No saved accounts yet.',
+	loadAccount: 'Load',
+	renameAccount: 'Rename',
+	deleteAccount: 'Delete',
+	accountDefaultName: 'Account {{number}}',
+	accountSaved: 'Account saved.',
+	accountLoaded: 'Account loaded.',
+	accountDeleted: 'Account deleted.',
+	confirmDeleteAccount: 'Delete this saved account?',
+	accountNamePrompt: 'Enter a new name for this account',
+	accountRenameSave: 'Save name',
+	accountRenameCancel: 'Cancel',
 	showBreakdown: 'Show coin and note subtotals',
 	showBreakdownHint: 'Add a separate total for coins and bills.',
 	close: 'Close',
@@ -136,6 +172,24 @@ const es: Messages = {
 	customize: 'Personalizar',
 	customizeTitle: 'Personalizar contador',
 	customizeDescription: 'Elige los controles y los detalles del resumen.',
+	savedAccountsMenu: 'Cuentas guardadas',
+	savedAccountsTitle: 'Cuentas guardadas',
+	savedAccountsDescription: 'Guarda esta cuenta y vuelve a ella más tarde.',
+	accountNameLabel: 'Nombre de la cuenta',
+	accountNamePlaceholder: 'Por ejemplo, mercado del viernes',
+	saveAccount: 'Guardar actual',
+	noSavedAccounts: 'Todavía no hay cuentas guardadas.',
+	loadAccount: 'Cargar',
+	renameAccount: 'Renombrar',
+	deleteAccount: 'Borrar',
+	accountDefaultName: 'Cuenta {{number}}',
+	accountSaved: 'Cuenta guardada.',
+	accountLoaded: 'Cuenta cargada.',
+	accountDeleted: 'Cuenta borrada.',
+	confirmDeleteAccount: '¿Borrar esta cuenta guardada?',
+	accountNamePrompt: 'Escribe un nombre nuevo para esta cuenta',
+	accountRenameSave: 'Guardar nombre',
+	accountRenameCancel: 'Cancelar',
 	showBreakdown: 'Mostrar subtotales de monedas y billetes',
 	showBreakdownHint: 'Añade un total separado para monedas y billetes.',
 	close: 'Cerrar',

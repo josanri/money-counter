@@ -27,6 +27,7 @@
 					</div>
 				</div>
 				<button type="button" class="settings-customize" data-customize-open aria-haspopup="dialog" data-i18n="customize">Customize</button>
+				<button type="button" class="settings-customize settings-customize--secondary" data-accounts-open aria-haspopup="dialog" data-i18n="savedAccountsMenu">Saved accounts</button>
 				<div class="settings-install" data-settings-install-wrap hidden>
 					<button
 						type="button"
@@ -122,6 +123,25 @@
 					</div>
 				</div>
 			</div>
+		</dialog>
+		<dialog class="customize-dialog accounts-dialog" data-accounts-dialog aria-labelledby="accounts-title">
+			<div class="customize-dialog__header">
+				<div>
+					<h2 id="accounts-title" data-i18n="savedAccountsTitle">Saved accounts</h2>
+					<p data-i18n="savedAccountsDescription">Save this count and return to it later.</p>
+				</div>
+				<button type="button" class="customize-dialog__close" data-accounts-close aria-label="Close">×</button>
+			</div>
+			<form class="accounts-save" data-account-save-form>
+				<label for="saved-account-name" data-i18n="accountNameLabel">Account name</label>
+				<div class="accounts-save__fields">
+					<input id="saved-account-name" name="accountName" maxlength="48" data-account-name data-i18n-placeholder="accountNamePlaceholder" placeholder="For example, Friday market" />
+					<button type="submit" class="settings-customize" data-i18n="saveAccount">Save current</button>
+				</div>
+			</form>
+			<p class="accounts-status" data-account-status aria-live="polite"></p>
+			<p class="accounts-empty" data-accounts-empty data-i18n="noSavedAccounts">No saved accounts yet.</p>
+			<ul class="accounts-list" data-accounts-list></ul>
 		</dialog>
 	</div>
 </header>
